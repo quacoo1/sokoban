@@ -37,15 +37,17 @@ boxes.move = function({ index, axis, direction }){
   let posY = (indexOfRow + directionY) 
   
   let nextIndex = posX + ( posY * OPTIONS.roomSize)
-  // console.log('index: ', index, 'next: ', nextIndex )
-
-  console.log(this[nextIndex])
 
   let movable = true
   
-  if( this[ nextIndex ] ) movable = this.move({ index: nextIndex, axis, direction })
-  else if(roomSeedBuffer[nextIndex] === '*') movable = false
-  
+
+  // allow movement of multiple boxes next to each other
+  // if( this[ nextIndex ] ) movable = this.move({ index: nextIndex, axis, direction })
+  // else if(roomSeedBuffer[nextIndex] === '*' ) movable = false
+
+  // allow movement of only one box at a time
+  if (roomSeedBuffer[nextIndex] === '*' || this[ nextIndex ]) movable = false
+
   if ( movable ){
   
 
