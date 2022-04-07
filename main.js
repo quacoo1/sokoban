@@ -112,7 +112,7 @@ const draw = () => {
   renderPlayer({ canvasContext ,player })
   boxes.render()
 
-  document.addEventListener('keyup', controls)
+  document.addEventListener('keydown', controls)
 }
 
 draw()
