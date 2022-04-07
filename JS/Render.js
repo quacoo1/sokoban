@@ -1,19 +1,26 @@
 import OPTIONS from './Options.js'
 
-export const renderRoom = ( { canvasContext, roomSeed, player, boxes } ) =>{
+export const renderRoom = ( { canvasContext, room, player, boxes } ) =>{
 
   let indexShift = 0;
   let j = 0;
 
-    for(let i = 0; i < roomSeed.length; i++){
+    for(let i = 0; i < room.seed.length; i++){
       if ( (i - indexShift) >= OPTIONS.roomSize ) {
         indexShift = i
         j++
       }
-      switch(roomSeed[i]){
+      switch(room.seed[i]){
         case '*':{
           canvasContext.fillStyle = 'green';
           canvasContext.fillRect( (i - indexShift) * OPTIONS.blockSize, j * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+        }
+        break
+        case 'o':{
+          canvasContext.fillStyle = 'red';
+          canvasContext.fillRect( (i - indexShift) * OPTIONS.blockSize, j * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+          room.holes += 1;
+  
         }
         break
         case 'p': {
@@ -38,6 +45,11 @@ export const renderPlayer =  ( { canvasContext, player } ) => {
 
 export const renderBox = ({ canvasContext, index }) => {
   canvasContext.fillStyle = 'yellow';
+  canvasContext.fillRect(  ( index % OPTIONS.roomSize ) * OPTIONS.blockSize, Math.floor(index/ OPTIONS.roomSize) * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+}
+
+export const renderHole = ({ canvasContext, index }) => {
+  canvasContext.fillStyle = 'red';
   canvasContext.fillRect(  ( index % OPTIONS.roomSize ) * OPTIONS.blockSize, Math.floor(index/ OPTIONS.roomSize) * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
 }
 

@@ -1,22 +1,29 @@
-import { renderRoom, renderPlayer,renderBox, removePlayer, removeBox } from './JS/Render.js'
+import { renderRoom, renderPlayer, renderBox , renderHole, removePlayer, removeBox } from './JS/Render.js'
 import OPTIONS from './JS/Options.js'
 
 const canvas = document.getElementById('canvas')
 const canvasContext = canvas.getContext('2d')
+const room = {
+  holes:0,
+  filledHoles:0,
+  seed:''
+}
 
-let roomSeedBuffer = ""
-roomSeedBuffer += "**********"
-roomSeedBuffer += "*p  *    *"
-roomSeedBuffer += "*   bb   *"
-roomSeedBuffer += "*        *"
-roomSeedBuffer += "*    b   *"
-roomSeedBuffer += "*        *"
-roomSeedBuffer += "*        *"
-roomSeedBuffer += "*        *"
-roomSeedBuffer += "*        *"
-roomSeedBuffer += "**********"
+room.seed = ""
+room.seed += "**********"
+room.seed += "*p  *    *"
+room.seed += "*   bb   *"
+room.seed += "*        *"
+room.seed += "*    b   *"
+room.seed += "*        *"
+room.seed += "*       o*"
+room.seed += "*       o*"
+room.seed += "*       o*"
+room.seed += "**********"
 
-const boxes = Array(roomSeedBuffer.length).fill(0)
+let roomFilledHoles = 0
+
+const boxes = Array(room.seed.length).fill(0)
 
 boxes.render = function(){
   for(let index = 0; index < this.length; index++){
@@ -40,21 +47,23 @@ boxes.move = function({ index, axis, direction }){
 
   let movable = true
   
-
   // allow movement of multiple boxes next to each other
   // if( this[ nextIndex ] ) movable = this.move({ index: nextIndex, axis, direction })
-  // else if(roomSeedBuffer[nextIndex] === '*' ) movable = false
+  // else if(room.seed[nextIndex] === '*' ) movable = false
 
   // allow movement of only one box at a time
-  if (roomSeedBuffer[nextIndex] === '*' || this[ nextIndex ]) movable = false
+  if (room.seed[nextIndex] === '*' || this[ nextIndex ]) movable = false
 
   if ( movable ){
-  
 
+    
     this[ index ] = 0
+    if(room.seed[index] === 'o') room.filledHoles -= 1
     removeBox({ canvasContext , index })
+
     this[ nextIndex ] = 1
-    renderBox({ canvasContext , index: nextIndex});
+    if(room.seed[nextIndex] === 'o') room.filledHoles += 1
+    renderBox({ canvasContext , index: nextIndex})
 
     return true
 
@@ -76,19 +85,19 @@ player.move = function( { axis , direction } ){
   let directionX = (axis === 'x') ? direction : 0
   let directionY = (axis === 'y') ? direction : 0
 
+  let index =  OPTIONS.roomSize * this.y + this.x 
+  let nextIndex = index + ( OPTIONS.roomSize * directionY ) + directionX
 
-  let posY = OPTIONS.roomSize * ( this.y + directionY )
-  let posX = this.x + directionX
-  let nextIndex = posY + posX
   let movable = true
 
   if (boxes[nextIndex]) {
     movable = boxes.move({index: nextIndex, axis, direction})
   }
-  else if(roomSeedBuffer[ posY + posX ] === '*') movable = false
+  else if(room.seed[ nextIndex ] === '*') movable = false
 
   if(movable){
     removePlayer({ canvasContext, player: this })
+    if(room.seed[ index ] === 'o') renderHole({ canvasContext , index })
     this[axis] += direction
     renderPlayer({ canvasContext, player: this })
   }
@@ -98,17 +107,23 @@ player.move = function( { axis , direction } ){
 
 
 const controls = (event) => {
+  
   if(event.code === "ArrowUp") player.move({axis:'y', direction: -1})
   if(event.code === "ArrowDown") player.move({axis:'y', direction: 1})
   if(event.code === "ArrowLeft") player.move({axis:'x', direction: -1})
   if(event.code === "ArrowRight") player.move({axis:'x', direction: 1})
+
+  // check whether room has been solved
+  if(room.holes > 0 && room.filledHoles === room.holes){
+    alert('solved')
+  } 
 }
 
 const draw = () => {
   canvasContext.canvas.height = OPTIONS.blockSize * OPTIONS.roomSize;
   canvasContext.canvas.width = OPTIONS.blockSize * OPTIONS.roomSize;
 
-  renderRoom( { canvasContext, roomSeed:roomSeedBuffer, player, boxes } )
+  renderRoom( { canvasContext, room, player, boxes } )
   renderPlayer({ canvasContext ,player })
   boxes.render()
 
