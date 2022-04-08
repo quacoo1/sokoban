@@ -18,7 +18,7 @@ export const renderRoom = ( { canvasContext, room, player, boxes } ) =>{
         break
         case 'o':{
           canvasContext.fillStyle = 'red';
-          canvasContext.fillRect( (i - indexShift) * OPTIONS.blockSize, j * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+          canvasContext.fillRect( (i - indexShift) * OPTIONS.blockSize, j * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize)
           room.holes += 1;
   
         }
@@ -32,6 +32,9 @@ export const renderRoom = ( { canvasContext, room, player, boxes } ) =>{
           boxes[i] = 1
         }
         break
+        default:{
+          canvasContext.clearRect( (i - indexShift) * OPTIONS.blockSize, j * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+        }
       }
     }
 }
@@ -43,21 +46,14 @@ export const renderPlayer =  ( { canvasContext, player } ) => {
   canvasContext.fillRect( player.x * OPTIONS.blockSize, player.y * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
 }
 
-export const renderBox = ({ canvasContext, index }) => {
-  canvasContext.fillStyle = 'yellow';
-  canvasContext.fillRect(  ( index % OPTIONS.roomSize ) * OPTIONS.blockSize, Math.floor(index/ OPTIONS.roomSize) * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+export const renderSquare = ({ color, position, canvasContext }) => {
+  canvasContext.fillStyle = color;
+  canvasContext.fillRect( position.x * OPTIONS.blockSize, position.y * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
 }
 
-export const renderHole = ({ canvasContext, index }) => {
-  canvasContext.fillStyle = 'red';
-  canvasContext.fillRect(  ( index % OPTIONS.roomSize ) * OPTIONS.blockSize, Math.floor(index/ OPTIONS.roomSize) * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
+export const removeSquare = ({ canvasContext, position }) => {
+  canvasContext.clearRect(  position.x * OPTIONS.blockSize, position.y * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
 }
-
-
-export const removeBox = ({ canvasContext, index }) => {
-  canvasContext.clearRect(  ( index % OPTIONS.roomSize ) * OPTIONS.blockSize, Math.floor(index/ OPTIONS.roomSize) * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
-}
-
 
 export const removePlayer =  ( { canvasContext, player } ) => {
   canvasContext.clearRect(player.x * OPTIONS.blockSize, player.y * OPTIONS.blockSize, OPTIONS.blockSize, OPTIONS.blockSize);
